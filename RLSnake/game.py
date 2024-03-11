@@ -2,6 +2,8 @@ import pygame
 import time
 import random
 
+
+
 class Snake():
     def __init__(self, width, height):
         #game properties
@@ -61,10 +63,22 @@ class Snake():
         if self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0:
             return True
 
+    def stop_game(self, event):
+
+        if event.key == pygame.K_s:
+            pygame.time.delay(500000)
+
+
     def check_collision(self):
-        current_snake_pos = (self.x, self.y)
-        if current_snake_pos == any(self.snake_segments):
-            return True
+        segments=self.snake_segments[1:]
+        for segment in segments:
+            if self.x==float(segment[0]) and self.y==float(segment[1]):
+                return True
+
+
+
+
+
 
     def gameover(self):
         self.message("Game over", (255, 91, 165))
