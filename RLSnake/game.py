@@ -16,8 +16,8 @@ class Snake():
         self.y = height/2
         self.x2 = 0
         self.y2 = 0
-        self.speed = 30
-        self.unit_per_movement = 10
+        self.speed = 15
+        self.unit_per_movement = 5
         self.snake_segments = [(self.x, self.y)]
         #food properties
         self.foodx = self.random(self.width)
@@ -34,8 +34,8 @@ class Snake():
                 if event.type == pygame.KEYDOWN:
                     #control snake TODO: modifying the way snake moves so that AI can control it
                     self.move(event)
-            if self.check_boundaries():
-                #check if snake hits the bounds TODO: AI should get negative reward
+            if self.check_boundaries() or self.check_collision():
+                #check if snake hits the bounds or yourself TODO: AI should get negative reward
                 game_over = True
             if self.eat():
                 #expand snake if he ate a rectangle TODO: AI should get positive reward
@@ -60,13 +60,18 @@ class Snake():
         if self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0:
             return True
 
+    def check_collision(self):
+        current_snake_pos = (self.x, self.y)
+        if current_snake_pos == any(self.snake_segments):
+            return True
+
     def gameover(self):
         self.message("Game over", (255, 91, 165))
         pygame.display.update()
         time.sleep(2)
 
     def message(self, msg, color):
-        font_style = pygame.font.SysFont('comicsansms', 50)
+        font_style = pygame.font.SysFont('comicsansms', 30)
         mesg = font_style.render(msg, True, color)
         self.dis.blit(mesg, [self.width / 2, self.height / 2])
 
@@ -108,5 +113,10 @@ class Snake():
             self.y2 = -self.unit_per_movement
             self.x2 = 0
         elif event.key == pygame.K_DOWN:
+            last_key = event.key
             self.y2 = self.unit_per_movement
             self.x2 = 0
+
+
+
+
