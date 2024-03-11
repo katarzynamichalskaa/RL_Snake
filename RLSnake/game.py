@@ -16,6 +16,7 @@ class Snake():
         self.y = height/2
         self.x2 = 0
         self.y2 = 0
+        self.direction = 'N'
         self.speed = 15
         self.unit_per_movement = 5
         self.snake_segments = [(self.x, self.y)]
@@ -103,19 +104,22 @@ class Snake():
         return cord
 
     def move(self, event):
-        if event.key == pygame.K_LEFT:
+        if (event.key == pygame.K_LEFT) & (self.direction != 'L') & (self.direction != 'R'):
             self.x2 = -self.unit_per_movement
             self.y2 = 0
-        elif event.key == pygame.K_RIGHT:
+            self.direction = 'L'
+        elif (event.key == pygame.K_RIGHT) & (self.direction != 'R') & (self.direction != 'L'):
             self.x2 = self.unit_per_movement
             self.y2 = 0
-        elif event.key == pygame.K_UP:
+            self.direction = 'R'
+        elif (event.key == pygame.K_UP) & (self.direction != 'U') & (self.direction != 'D'):
             self.y2 = -self.unit_per_movement
             self.x2 = 0
-        elif event.key == pygame.K_DOWN:
-            last_key = event.key
+            self.direction = 'U'
+        elif (event.key == pygame.K_DOWN) & (self.direction != 'D') & (self.direction != 'U'):
             self.y2 = self.unit_per_movement
             self.x2 = 0
+            self.direction = 'D'
 
 
 
