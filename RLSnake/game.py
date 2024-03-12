@@ -26,6 +26,10 @@ class Snake():
         self.foodx = self.random(self.width)
         self.foody = self.random(self.height)
 
+        self.number_of_walls=5
+        self.walls_position=self.create_walls()
+
+
     def update(self):
         game_over = False
         #game loop
@@ -49,7 +53,7 @@ class Snake():
             self.update_snake_pos()
             self.x += self.x2
             self.y += self.y2
-
+            self.render_walls()
             self.render()
             self.clock.tick(self.speed)
         self.gameover()
@@ -64,7 +68,6 @@ class Snake():
             return True
 
     def stop_game(self, event):
-
         if event.key == pygame.K_s:
             pygame.time.delay(500000)
 
@@ -74,10 +77,19 @@ class Snake():
         for segment in segments:
             if self.x==float(segment[0]) and self.y==float(segment[1]):
                 return True
-
-
-
-
+    def create_walls(self):
+        walls_position=[]
+        for i in range(0, self.number_of_walls):
+            x = self.random(self.width)
+            y = self.random(self.height)
+            position=(x,y)
+            walls_position.append(position)
+        return walls_position
+    def render_walls(self):
+        walls_position=self.walls_position
+        for single_wall in walls_position:
+            pygame.draw.rect(self.dis,(0,0,0),[single_wall[0], single_wall[1], self.unit_per_movement+20, self.unit_per_movement+20])
+            #pygame.display.update()
 
 
     def gameover(self):
@@ -97,8 +109,10 @@ class Snake():
             pygame.draw.rect(self.dis, (255, 91, 165),[segment[0], segment[1], self.unit_per_movement, self.unit_per_movement])
         #food render
         pygame.draw.rect(self.dis, (255, 0, 255), [self.foodx, self.foody, self.unit_per_movement, self.unit_per_movement])
+        self.render_walls()
         pygame.display.update()
-
+    def static_render(self):
+        self.render_walls()
     def update_snake_pos(self):
         for i in range(len(self.snake_segments) - 1, 0, -1):
             self.snake_segments[i] = self.snake_segments[i - 1]
