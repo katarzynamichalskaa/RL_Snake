@@ -3,7 +3,6 @@ import time
 import random
 
 
-
 class Snake():
     def __init__(self, width, height):
         #game properties
@@ -13,6 +12,7 @@ class Snake():
         self.clock = pygame.time.Clock()
         self.width = width
         self.height = height
+
         #snake properties
         self.x = width/2
         self.y = height/2
@@ -23,23 +23,24 @@ class Snake():
         self.unit_per_movement = 5
         self.snake_segments = [(self.x, self.y)]
 
+        #wall properties
+        self.wall_width = 75
+        self.wall_length = 155
+        self.number_of_walls = 5
+        self.walls_position = self.create_walls()
+
         # control snake TODO: sometimes first food and player position is in the wall and the game is already over
         #food properties
         self.foodx = self.random(self.width)
         self.foody = self.random(self.height)
 
-
-        #wall properties
-        self.wall_width=75
-        self.wall_length=155
-        self.number_of_walls=5
-        self.walls_position=self.create_walls()
-
-
     def update(self):
         game_over = False
         #game loop
         while not game_over:
+            while self.wall_detection(self.foodx, self.foody):
+                self.foodx = self.random(self.width)
+                self.foody = self.random(self.height)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     #quit
@@ -75,33 +76,33 @@ class Snake():
             return True
 
     def check_collision(self):
-        segments=self.snake_segments[1:]
+        segments = self.snake_segments[1:]
         for segment in segments:
-            if self.x==float(segment[0]) and self.y==float(segment[1]):
+            if self.x == float(segment[0]) and self.y == float(segment[1]):
                 return True
+
     def create_walls(self):
-        walls_position=[]
+        walls_position = []
         for i in range(0, self.number_of_walls):
             x = self.random(self.width)
             y = self.random(self.height)
-            position=(x,y,self.wall_width,self.wall_length)
+            position = (x, y, self.wall_width, self.wall_length)
             walls_position.append(position)
         return walls_position
 
     def render_walls(self):
-        walls_position=self.walls_position
-        walls_coords=[]
+        walls_position = self.walls_position
         for single_wall in walls_position:
-            pygame.draw.rect(self.dis,(0,0,0),[single_wall[0], single_wall[1], self.wall_width, self.wall_length])
-
+            pygame.draw.rect(self.dis, (0, 0, 0), [single_wall[0], single_wall[1], self.wall_width, self.wall_length])
 
     def wall_detection(self, x, y):
-        walls_area=self.walls_position
+        walls_area = self.walls_position
         for wall in walls_area:
             wall_rect = pygame.Rect(wall[0], wall[1], wall[2], wall[3])
             point_rect = pygame.Rect(x, y, 2.5, 2.5)
             if wall_rect.colliderect(point_rect):
                 return True
+
     def gameover(self):
         self.message("Game over", (255, 91, 165))
         pygame.display.update()
@@ -121,8 +122,7 @@ class Snake():
         pygame.draw.rect(self.dis, (255, 0, 255), [self.foodx, self.foody, self.unit_per_movement, self.unit_per_movement])
         self.render_walls()
         pygame.display.update()
-    def static_render(self):
-        self.render_walls()
+
     def update_snake_pos(self):
         for i in range(len(self.snake_segments) - 1, 0, -1):
             self.snake_segments[i] = self.snake_segments[i - 1]
@@ -132,12 +132,12 @@ class Snake():
         if self.x == self.foodx and self.y == self.foody:
             x = self.random(self.width)
             y = self.random(self.height)
-            while(self.wall_detection(x,y) is True):
+            while self.wall_detection(x, y) is True:
                 x = self.random(self.width)
                 y = self.random(self.height)
 
-            self.foodx=x
-            self.foody=y
+            self.foodx = x
+            self.foody = y
             return True
 
     def expand_snake(self):
