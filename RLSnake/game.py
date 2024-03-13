@@ -22,10 +22,16 @@ class Snake():
         self.speed = 15
         self.unit_per_movement = 5
         self.snake_segments = [(self.x, self.y)]
+
+        # control snake TODO: sometimes first food and player position is in the wall and the game is already over
         #food properties
         self.foodx = self.random(self.width)
         self.foody = self.random(self.height)
 
+
+        #wall properties
+        self.wall_width=75
+        self.wall_length=155
         self.number_of_walls=5
         self.walls_position=self.create_walls()
 
@@ -41,7 +47,7 @@ class Snake():
                 if event.type == pygame.KEYDOWN:
                     #control snake TODO: modifying the way snake moves so that AI can control it
                     self.move(event)
-            if self.check_boundaries() or self.check_collision():
+            if self.check_boundaries() or self.check_collision() or self.wall_detection(self.x, self.y):
                 #check if snake hits the bounds or yourself TODO: AI should get negative reward
                 game_over = True
             if self.eat():
@@ -55,6 +61,7 @@ class Snake():
             self.y += self.y2
             self.render_walls()
             self.render()
+            self.wall_detection(self.x, self.y)
             self.clock.tick(self.speed)
         self.gameover()
         self.quit()
@@ -67,11 +74,6 @@ class Snake():
         if self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0:
             return True
 
-    def stop_game(self, event):
-        if event.key == pygame.K_s:
-            pygame.time.delay(500000)
-
-
     def check_collision(self):
         segments=self.snake_segments[1:]
         for segment in segments:
@@ -82,16 +84,24 @@ class Snake():
         for i in range(0, self.number_of_walls):
             x = self.random(self.width)
             y = self.random(self.height)
-            position=(x,y)
+            position=(x,y,self.wall_width,self.wall_length)
             walls_position.append(position)
         return walls_position
+
     def render_walls(self):
         walls_position=self.walls_position
+        walls_coords=[]
         for single_wall in walls_position:
-            pygame.draw.rect(self.dis,(0,0,0),[single_wall[0], single_wall[1], self.unit_per_movement+20, self.unit_per_movement+20])
-            #pygame.display.update()
+            pygame.draw.rect(self.dis,(0,0,0),[single_wall[0], single_wall[1], self.wall_width, self.wall_length])
 
 
+    def wall_detection(self, x, y):
+        walls_area=self.walls_position
+        for wall in walls_area:
+            wall_rect = pygame.Rect(wall[0], wall[1], wall[2], wall[3])
+            point_rect = pygame.Rect(x, y, 2.5, 2.5)
+            if wall_rect.colliderect(point_rect):
+                return True
     def gameover(self):
         self.message("Game over", (255, 91, 165))
         pygame.display.update()
@@ -120,8 +130,14 @@ class Snake():
 
     def eat(self):
         if self.x == self.foodx and self.y == self.foody:
-            self.foodx = self.random(self.width)
-            self.foody = self.random(self.height)
+            x = self.random(self.width)
+            y = self.random(self.height)
+            while(self.wall_detection(x,y) is True):
+                x = self.random(self.width)
+                y = self.random(self.height)
+
+            self.foodx=x
+            self.foody=y
             return True
 
     def expand_snake(self):
