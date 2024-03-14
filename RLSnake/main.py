@@ -1,5 +1,5 @@
-from game import Snake
+from game import Game
 
 if __name__ == "__main__":
-    game = Snake(500, 500)
+    game = Game(500, 500)
     game.update()
