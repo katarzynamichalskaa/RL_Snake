@@ -43,14 +43,14 @@ class Game:
         self.quit()
 
     def gameover(self):
-        self.send_message("Game over", (0, 255, 0), [self.width / 2, self.height / 2], 30)
+        self.send_message("Game over", (246, 0, 0), [self.width / 2, self.height / 2], 30)
         time.sleep(2)
 
     def score(self):
-        self.send_message("Score: " + str(len(self.snake.snake_segments)-1), (0, 255, 0), [self.width / 50, self.height / 50], 30)
+        self.send_message("Score: " + str(len(self.snake.snake_segments)-1), (0, 153, 0), [self.width / 50, self.height / 50], 30)
 
     def send_message(self, msg, color, dest, size):
-        font_style = pygame.font.SysFont('comicsansms', size)
+        font_style = pygame.font.SysFont('font.ttf', size)
         mesg = font_style.render(msg, True, color)
         self.dis.blit(mesg, dest)
         pygame.display.update()
