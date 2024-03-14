@@ -27,13 +27,11 @@ class Snake:
         while self.wall_detection(self.x, self.y):
             self.walls_position = self.create_walls()
 
-        self.foodx = self.random(self.width)
-        self.foody = self.random(self.height)
+        self.foodx, self.foody = self.random(self.width, self.height)
 
         # while foods' pos in walls, recreate foods' pos
         while self.wall_detection(self.foodx, self.foody):
-            self.foodx = self.random(self.width)
-            self.foody = self.random(self.height)
+            self.foodx, self.foody = self.random(self.width, self.height)
 
     def update_snake_pos(self):
         for i in range(len(self.snake_segments) - 1, 0, -1):
@@ -43,8 +41,7 @@ class Snake:
     def create_walls(self):
         walls_position = []
         for i in range(0, self.number_of_walls):
-            x = self.random(self.width)
-            y = self.random(self.height)
+            x, y = self.random(self.width, self.height)
             position = (x, y, self.wall_width, self.wall_length)
             walls_position.append(position)
         return walls_position
@@ -69,12 +66,9 @@ class Snake:
 
     def eat(self):
         if self.x == self.foodx and self.y == self.foody:
-            x = self.random(self.width)
-            y = self.random(self.height)
+            x, y = self.random(self.width, self.height)
             while self.wall_detection(x, y) is True:
-                x = self.random(self.width)
-                y = self.random(self.height)
-
+                x, y = self.random(self.width, self.height)
             self.foodx = x
             self.foody = y
             return True
@@ -82,9 +76,10 @@ class Snake:
     def expand_snake(self):
         self.snake_segments.append((self.x, self.y))
 
-    def random(self, dim):
-        cord = round(random.randrange(0, dim - self.unit_per_movement) / 10.0) * 10.0
-        return cord
+    def random(self, dimx, dimy):
+        cord_x = round(random.randrange(0, dimx - self.unit_per_movement) / 10.0) * 10.0
+        cord_y = round(random.randrange(0, dimy - self.unit_per_movement) / 10.0) * 10.0
+        return cord_x, cord_y
 
     def move(self, event):
         if (event.key == pygame.K_LEFT) & (self.direction != 'L') & (self.direction != 'R'):
