@@ -9,27 +9,31 @@ class Snake:
         self.height = height
 
         # snake properties
-        self.x = width / 2
-        self.y = height / 2
-        self.x2 = 0
-        self.y2 = 0
-        self.direction = 'N'
         self.speed = 15
         self.unit_per_movement = 5
-        self.snake_segments = [(self.x, self.y)]
 
+        # walls properties
         self.wall_width = 75
         self.wall_length = 155
         self.number_of_walls = 5
+        self.reset()
+
+    def reset(self):
+        self.x = self.width / 2
+        self.y = self.height / 2
+        self.x2 = 0
+        self.y2 = 0
+        self.direction = 'N'
+        self.snake_segments = [(self.x, self.y)]
+
         self.walls_position = self.create_walls()
 
         # while snake's pos in walls, recreate walls
         while self.wall_detection(self.x, self.y):
             self.walls_position = self.create_walls()
 
-        self.foodx, self.foody = self.random([self.width, self.height])
-
         # while foods' pos in walls, recreate foods' pos
+        self.foodx, self.foody = self.random([self.width, self.height])
         while self.wall_detection(self.foodx, self.foody):
             self.foodx, self.foody = self.random([self.width, self.height])
 
