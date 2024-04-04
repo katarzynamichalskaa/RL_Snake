@@ -1,5 +1,17 @@
 import pygame
 import random
+from enum import Enum
+
+
+def random_coords(dims, unit):
+    return tuple(round(random.randrange(0, dim - unit) / 10.0) * 10.0 for dim in dims)
+
+
+class Directions(Enum):
+    UP = 'U'
+    DOWN = 'D'
+    RIGHT = 'R'
+    LEFT = 'L'
 
 
 class Snake:
@@ -23,32 +35,30 @@ class Snake:
         self.y = self.height / 2
         self.x2 = 0
         self.y2 = 0
-        self.direction = 'N'
+        self.direction = Directions.UP
         self.snake_segments = [(self.x, self.y)]
-
-        self.walls_position = self.create_walls()
-
-        # while snake's pos in walls, recreate walls
-        while self.wall_detection(self.x, self.y):
-            self.walls_position = self.create_walls()
-
-        # while foods' pos in walls, recreate foods' pos
-        self.foodx, self.foody = self.random([self.width, self.height])
-        while self.wall_detection(self.foodx, self.foody):
-            self.foodx, self.foody = self.random([self.width, self.height])
+        self.create_walls()
+        self.create_food()
 
     def update_snake_pos(self):
-        for i in range(len(self.snake_segments) - 1, 0, -1):
-            self.snake_segments[i] = self.snake_segments[i - 1]
-        self.snake_segments[0] = (self.x, self.y)
+        self.snake_segments = [(self.x, self.y)] + self.snake_segments[:-1]
+
+    def create_food(self):
+        self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
+        while self.wall_detection(self.foodx, self.foody):
+            self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
 
     def create_walls(self):
-        walls_position = []
-        for i in range(0, self.number_of_walls):
-            x, y = self.random([self.width, self.height])
-            position = (x, y, self.wall_width, self.wall_length)
-            walls_position.append(position)
-        return walls_position
+        self.walls_position = []
+        for _ in range(self.number_of_walls):
+            while True:
+                x, y = random_coords([self.width, self.height], self.unit_per_movement)
+                position = (x, y, self.wall_width, self.wall_length)
+                wall_rect = pygame.Rect(position[0], position[1], position[2], position[3])
+                if not any(wall_rect.colliderect(pygame.Rect(w[0], w[1], w[2], w[3])) for w in self.walls_position):
+                    if not self.wall_detection(x, y):
+                        self.walls_position.append(position)
+                        break
 
     def wall_detection(self, x, y):
         walls_area = self.walls_position
@@ -59,66 +69,33 @@ class Snake:
                 return True
 
     def check_boundaries(self):
-        if self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0:
-            return True
+        return self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0
 
     def check_collision(self):
-        segments = self.snake_segments[1:]
-        for segment in segments:
-            if self.x == float(segment[0]) and self.y == float(segment[1]):
-                return True
+        return any((self.x, self.y) == segment for segment in self.snake_segments[1:])
 
     def eat(self):
-        if self.x == self.foodx and self.y == self.foody:
-            x, y = self.random([self.width, self.height])
-            while self.wall_detection(x, y) is True:
-                x, y = self.random([self.width, self.height])
-            self.foodx = x
-            self.foody = y
+        if (self.x, self.y) == (self.foodx, self.foody):
+            self.create_food()
             return True
 
     def expand_snake(self):
         self.snake_segments.append((self.x, self.y))
 
-    def random(self, dims):
-        for dim in dims:
-            cord = round(random.randrange(0, dim - self.unit_per_movement) / 10.0) * 10.0
-            yield cord
-
     def move(self, event):
-        if (event.key == pygame.K_LEFT) & (self.direction != 'L') & (self.direction != 'R'):
+        if event.key == pygame.K_LEFT and self.direction != Directions.LEFT and self.direction != Directions.RIGHT:
             self.x2 = -self.unit_per_movement
             self.y2 = 0
-            self.direction = 'L'
-        elif (event.key == pygame.K_RIGHT) & (self.direction != 'R') & (self.direction != 'L'):
+            self.direction = Directions.LEFT
+        elif event.key == pygame.K_RIGHT and self.direction != Directions.RIGHT and self.direction != Directions.LEFT:
             self.x2 = self.unit_per_movement
             self.y2 = 0
-            self.direction = 'R'
-        elif (event.key == pygame.K_UP) & (self.direction != 'U') & (self.direction != 'D'):
+            self.direction = Directions.RIGHT
+        elif event.key == pygame.K_UP and self.direction != Directions.UP and self.direction != Directions.DOWN:
             self.y2 = -self.unit_per_movement
             self.x2 = 0
-            self.direction = 'U'
-        elif (event.key == pygame.K_DOWN) & (self.direction != 'D') & (self.direction != 'U'):
+            self.direction = Directions.UP
+        elif event.key == pygame.K_DOWN and self.direction != Directions.DOWN and self.direction != Directions.UP:
             self.y2 = self.unit_per_movement
             self.x2 = 0
-            self.direction = 'D'
-
-    def render_snake(self):
-        for segment in self.snake_segments:
-            pygame.draw.rect(self.dis, (255, 0, 0),
-                             [segment[0], segment[1], self.unit_per_movement, self.unit_per_movement])
-
-    def render_food(self):
-        pygame.draw.rect(self.dis, (0, 0, 255),
-                         [self.foodx, self.foody, self.unit_per_movement, self.unit_per_movement])
-
-    def render_walls(self):
-        walls_position = self.walls_position
-        for single_wall in walls_position:
-            pygame.draw.rect(self.dis, (0, 0, 0), [single_wall[0], single_wall[1], self.wall_width, self.wall_length])
-
-    def render(self):
-        self.dis.fill((245, 245, 190))
-        self.render_snake()
-        self.render_food()
-        self.render_walls()
+            self.direction = Directions.DOWN

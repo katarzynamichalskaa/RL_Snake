@@ -8,11 +8,12 @@ class Agent:
         pass
 
     def remember(self, state, action, reward, next_state, done):
+        # deque?
         pass
 
-    def get_state(self, snake):
-        #return state
-        pass
+    def get_state(self, game):
+        state = [game.snake.x, game.snake.y, game.snake.foodx, game.snake.foody] # later state probably will contain walls' and borders' coords also
+        return state
 
     def do_action(self, snake):
         pass
