@@ -50,18 +50,21 @@ class Snake:
 
     def create_walls(self):
         self.walls_position = []
-        for _ in range(self.number_of_walls):
-            while True:
-                x, y = random_coords([self.width, self.height], self.unit_per_movement)
-                position = (x, y, self.wall_width, self.wall_length)
-                wall_rect = pygame.Rect(position[0], position[1], position[2], position[3])
-                if not any(wall_rect.colliderect(pygame.Rect(w[0], w[1], w[2], w[3])) for w in self.walls_position):
-                    if not self.wall_detection(x, y):
-                        self.walls_position.append(position)
-                        break
+        for i in range(0, self.number_of_walls):
+            x, y = random_coords([self.width, self.height], self.unit_per_movement)
+            position = (x, y, self.wall_width, self.wall_length)
+            self.walls_position.append(position)
+        while self.wall_detection(self.x, self.y):
+            self.walls_position = self.create_walls()
+        return self.walls_position
 
     def wall_detection(self, x, y):
-        return any(pygame.Rect(w[0], w[1], w[2], w[3]).colliderect(pygame.Rect(x, y, 2.5, 2.5)) for w in self.walls_position)
+        walls_area = self.walls_position
+        for wall in walls_area:
+            wall_rect = pygame.Rect(wall[0], wall[1], wall[2], wall[3])
+            point_rect = pygame.Rect(x, y, 2.5, 2.5)
+            if wall_rect.colliderect(point_rect):
+                return True
 
     def check_boundaries(self):
         return self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0
