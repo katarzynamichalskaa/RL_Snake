@@ -35,7 +35,7 @@ class Snake:
         self.y = self.height / 2
         self.x2 = 0
         self.y2 = 0
-        self.direction = Directions.UP
+        self.direction = Directions.DOWN
         self.snake_segments = [(self.x, self.y)]
         self.create_walls()
         self.create_food()
@@ -45,8 +45,8 @@ class Snake:
 
     def create_food(self):
         self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
-        while self.wall_detection(self.foodx, self.foody):
-            self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
+        while self.wall_detection(self.foodx, self.foody) or self.foodx in self.snake_segments or self.foody in self.snake_segments:
+            self.create_food()
 
     def create_walls(self):
         self.walls_position = []
@@ -61,12 +61,7 @@ class Snake:
                         break
 
     def wall_detection(self, x, y):
-        walls_area = self.walls_position
-        for wall in walls_area:
-            wall_rect = pygame.Rect(wall[0], wall[1], wall[2], wall[3])
-            point_rect = pygame.Rect(x, y, 2.5, 2.5)
-            if wall_rect.colliderect(point_rect):
-                return True
+        return any(pygame.Rect(w[0], w[1], w[2], w[3]).colliderect(pygame.Rect(x, y, 2.5, 2.5)) for w in self.walls_position)
 
     def check_boundaries(self):
         return self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0
