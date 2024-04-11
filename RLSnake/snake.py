@@ -28,9 +28,9 @@ class Snake:
         self.wall_width = 75
         self.wall_length = 155
         self.number_of_walls = 5
-        self.if_reset()
+        self.reset_snake()
 
-    def if_reset(self):
+    def reset_snake(self):
         self.x = self.width / 2
         self.y = self.height / 2
         self.x2 = 0
@@ -80,38 +80,17 @@ class Snake:
     def expand_snake(self):
         self.snake_segments.append((self.x, self.y))
 
-    def move(self):
-        random_num = random.randint(0, 3)
-        if random_num == 0:
-            prediction = [0, 0, 0, 1]
-        if random_num == 1:
-            prediction = [0, 0, 1, 0]
-        if random_num == 2:
-            prediction = [0, 1, 0, 0]
-        if random_num == 3:
-            prediction = [1, 0, 0, 0]
-        #left
-        if prediction == [1, 0, 0, 0] and self.direction != Directions.LEFT and self.direction != Directions.RIGHT:
-            self.x2 = -self.unit_per_movement
-            self.y2 = 0
-            self.direction = Directions.LEFT
+    def move(self, action):
+        directions = [Directions.LEFT, Directions.RIGHT, Directions.UP, Directions.DOWN]
+        opposite_directions = [Directions.RIGHT, Directions.LEFT, Directions.DOWN, Directions.UP]
+        actions = [[1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0]]
+        movements = [(-self.unit_per_movement, 0), (self.unit_per_movement, 0), (0, -self.unit_per_movement),
+                     (0, self.unit_per_movement)]
 
-        #right
-        elif prediction == [0, 0, 1, 0] and self.direction != Directions.RIGHT and self.direction != Directions.LEFT:
-            self.x2 = self.unit_per_movement
-            self.y2 = 0
-            self.direction = Directions.RIGHT
-
-        #up
-        elif prediction == [0, 0, 0, 1] and self.direction != Directions.UP and self.direction != Directions.DOWN:
-            self.y2 = -self.unit_per_movement
-            self.x2 = 0
-            self.direction = Directions.UP
-
-        #down
-        elif prediction == [0, 1, 0, 0] and self.direction != Directions.DOWN and self.direction != Directions.UP:
-            self.y2 = self.unit_per_movement
-            self.x2 = 0
-            self.direction = Directions.DOWN
+        for act, dir, mov in zip(actions, directions, movements):
+            if action == act and self.direction != dir and self.direction != opposite_directions[directions.index(dir)]:
+                self.x2, self.y2 = mov
+                self.direction = dir
+                break
 
 

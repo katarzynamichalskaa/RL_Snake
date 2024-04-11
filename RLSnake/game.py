@@ -23,40 +23,43 @@ class Game:
         self.snake = Snake(width, height, self.dis)
         self.score = len(self.snake.snake_segments) - 1
 
-    def step(self):   # modified to step
+    def step(self, action): # modified to step
         game_over = False
         reward = 0
-        while not game_over:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game_over = True
 
-            self.snake.move() # control snake TODO: modify the way snake moves so that AI can control it
+        # events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.quit()
+                self.gameover()
+                game_over = True
 
-            if self.snake.check_boundaries() or self.snake.check_collision() or self.snake.wall_detection(self.snake.x,self.snake.y):
-                self.score = 0
-                self.reset()
-                #game_over = True  # AI should get negative reward
-                reward = -10
+        # move the snake
+        self.snake.move(action)
+        self.snake.x += self.snake.x2
+        self.snake.y += self.snake.y2
+        self.snake.update_snake_pos()
 
-            if self.snake.eat():
-                self.score += 1
-                self.snake.expand_snake() # AI get positive reward
-                reward = 10
+        # check game over conditions
+        if self.snake.check_boundaries() or self.snake.check_collision() or self.snake.wall_detection(self.snake.x,
+                                                                                                      self.snake.y):
+            self.reset()
+            game_over = True
+            reward = -10
 
-            self.snake.x += self.snake.x2
-            self.snake.y += self.snake.y2
+        # check if the snake eats food
+        if self.snake.eat():
+            self.score += 1
+            self.snake.expand_snake()
+            reward = 10
 
-            self.snake.update_snake_pos()
-            self.render()
-            self.display_score()
-            self.snake.wall_detection(self.snake.x, self.snake.y)
-            self.clock.tick(self.snake.speed)
-            pygame.display.update()
+        # render the game
+        self.render()
+        self.display_score()
+        self.clock.tick(self.snake.speed)
+        pygame.display.update()
 
-        self.gameover()
-        self.quit()
-        #return game_over, reward, self.score
+        return game_over, reward, self.score
 
     def gameover(self):
         self.send_message("Game over", (246, 0, 0), [self.width / 2, self.height / 2], 30)
@@ -96,4 +99,4 @@ class Game:
 
     def reset(self):
         self.score = 0
-        self.snake.if_reset()
+        self.snake.reset_snake()
