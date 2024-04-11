@@ -30,12 +30,12 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game_over = True
-                if event.type == pygame.KEYDOWN:
-                    self.snake.move(event) # control snake TODO: modify the way snake moves so that AI can control it
+
+            self.snake.move() # control snake TODO: modify the way snake moves so that AI can control it
 
             if self.snake.check_boundaries() or self.snake.check_collision() or self.snake.wall_detection(self.snake.x,self.snake.y):
                 self.score = 0
-                self.snake.reset()
+                self.reset()
                 #game_over = True  # AI should get negative reward
                 reward = -10
 
@@ -94,4 +94,6 @@ class Game:
         for obj in objects:
             pygame.draw.rect(self.dis, color, [obj[0], obj[1], width, height])
 
-
+    def reset(self):
+        self.score = 0
+        self.snake.if_reset()
