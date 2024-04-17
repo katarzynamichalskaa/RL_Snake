@@ -4,6 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 
+
 class DQN(nn.Module):   # from pytorch documentation
 
     def __init__(self, n_observations, n_actions):
@@ -17,12 +18,12 @@ class DQN(nn.Module):   # from pytorch documentation
         x = F.relu(self.layer2(x))
         return self.layer3(x)
 
-
     def create_model(self, state_space_size, action_space_size):
         model = DQN(state_space_size, action_space_size)
-        loss_fn=nn.HuberLoss()
-        optimizer=optim.Adam(model.parameters())
+        loss_fn = nn.HuberLoss()
+        optimizer = optim.Adam(model.parameters())
         return model, loss_fn, optimizer
+
 
 class Trainer:
     def __init__(self):

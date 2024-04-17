@@ -1,5 +1,7 @@
 from game import Game
 import random
+import numpy as np
+
 
 class Agent:
     def __init__(self):

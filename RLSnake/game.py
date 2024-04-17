@@ -41,9 +41,7 @@ class Game:
         self.snake.update_snake_pos()
 
         # check game over conditions
-        if self.snake.check_boundaries() or self.snake.check_collision() or self.snake.wall_detection(self.snake.x,
-                                                                                                      self.snake.y):
-            self.reset()
+        if self.snake.check_boundaries() or self.snake.check_collision(): # or self.snake.wall_detection(self.snake.x, self.snake.y):
             game_over = True
             reward = -10
 
@@ -88,10 +86,12 @@ class Game:
                             Color.FOOD.value,
                             self.snake.unit_per_movement,
                             self.snake.unit_per_movement)
+        '''
         self.render_objects(self.snake.walls_position,
                             Color.WALL.value,
                             self.snake.wall_width,
                             self.snake.wall_length)
+        '''
 
     def render_objects(self, objects, color, width, height):
         for obj in objects:

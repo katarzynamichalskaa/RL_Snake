@@ -1,6 +1,7 @@
 import pygame
 import random
 from enum import Enum
+import numpy as np
 
 
 def random_coords(dims, unit):
@@ -37,7 +38,7 @@ class Snake:
         self.y2 = 0
         self.direction = Directions.DOWN
         self.snake_segments = [(self.x, self.y)]
-        self.create_walls()
+        #self.create_walls()
         self.create_food()
 
     def update_snake_pos(self):
@@ -45,7 +46,7 @@ class Snake:
 
     def create_food(self):
         self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
-        while self.wall_detection(self.foodx, self.foody) or self.foodx in self.snake_segments or self.foody in self.snake_segments:
+        while self.foodx in self.snake_segments or self.foody in self.snake_segments: #self.wall_detection(self.foodx, self.foody) or
             self.create_food()
 
     def create_walls(self):
@@ -88,9 +89,7 @@ class Snake:
                      (0, self.unit_per_movement)]
 
         for act, dir, mov in zip(actions, directions, movements):
-            if action == act and self.direction != dir and self.direction != opposite_directions[directions.index(dir)]:
+            if np.array_equal(action, act) and self.direction != dir and self.direction != opposite_directions[directions.index(dir)]:
                 self.x2, self.y2 = mov
                 self.direction = dir
                 break
-
-
