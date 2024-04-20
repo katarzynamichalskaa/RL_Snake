@@ -6,8 +6,8 @@ import torch
 
 game = Game(100, 100)
 agent = Agent()
-model = DQN(4, 4)
-model, loss_fn, optim = model.create_model(4, 4)
+model = DQN(8, 3)
+model, loss_fn, optim = model.create_model(8, 3)
 alpha = 0.5
 gamma = 0.6
 epsilon = 0.1
@@ -17,9 +17,11 @@ if __name__ == "__main__":
     for episode in range(num_episodes):
         game.reset()
         total_rewards = 0
+
         for step in range(100):
 
             state = agent.get_state(game)
+            print(state)
             state = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
 
             if np.random.uniform(0, 1) < epsilon:
