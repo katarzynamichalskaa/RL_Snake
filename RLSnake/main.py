@@ -1,42 +1,48 @@
 from agent import Agent
 from game import Game
-from model import DQN
 import numpy as np
 import torch
 
-game = Game(100, 100)
+game = Game(300, 300)
 agent = Agent()
-model = DQN(8, 3)
-model, loss_fn, optim = model.create_model(8, 3)
 alpha = 0.5
-gamma = 0.6
-epsilon = 0.1
+epsilon = 80
+plot_scores = []
+plot_mean_scores = []
 
 if __name__ == "__main__":
-    num_episodes = 1000
+    num_episodes = 10000
     for episode in range(num_episodes):
         game.reset()
         total_rewards = 0
 
-        for step in range(100):
+        for step in range(200):
 
             state = agent.get_state(game)
-            print(state)
             state = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
 
-            if np.random.uniform(0, 1) < epsilon:
+            epsilon = epsilon - agent.number_of_games
+
+            if np.random.randint(0, 100) < epsilon:
                 action = agent.predict_action()
             else:
-                action = torch.argmax(model(state)).item()
+                action = [0, 0, 0]
+                index_action = torch.argmax(agent.model(state)).item()
+                action[index_action] = 1
 
             game_over, reward, score = game.step(action)
             new_state = agent.get_state(game)
             new_state = torch.tensor(new_state, dtype=torch.float32).unsqueeze(0)
+
+            agent.remember(state, action, reward, new_state, game_over)
+
             total_rewards += reward
-            target = reward
             state = new_state
 
-            if game_over:
+            if game_over or step == 199:
+                agent.number_of_games += 1
+                agent.train_long_memory()
+                print("Reward:", total_rewards)
+
                 break
 
-        print("Reward:", total_rewards)

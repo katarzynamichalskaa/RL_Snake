@@ -80,7 +80,6 @@ class Snake:
             danger_zones[3] = 1         # down wall
         elif self.y - offset < 0:
             danger_zones[1] = 1         # up wall
-        print(danger_zones)
         return danger_zones
 
     def check_collision(self):
