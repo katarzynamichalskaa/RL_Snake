@@ -9,21 +9,21 @@ class DQN(nn.Module):   # from pytorch documentation
 
     def __init__(self, n_observations, n_actions):
         super(DQN, self).__init__()
-        self.layer1 = nn.Linear(n_observations, 128)
-        self.layer2 = nn.Linear(128, 128)
-        self.layer3 = nn.Linear(128, n_actions)
-        self.gamma = 0.6
+        self.layer1 = nn.Linear(n_observations, 256)
+        self.layer2 = nn.Linear(256, n_actions)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        return self.layer3(x)
+        return self.layer2(x)
 
-    def create_model(self, state_space_size, action_space_size):
-        self.model = DQN(state_space_size, action_space_size)
+
+class Trainer:
+    def __init__(self, model, lr, gamma):
+        self.lr = lr
+        self.gamma = gamma
+        self.model = model
+        self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.loss_fn = nn.HuberLoss()
-        self.optimizer = optim.Adam(self.model.parameters())
-        return self.model, self.loss_fn, self.optimizer
 
     def train_model(self, state, action, reward, next_state, done):
 
@@ -38,7 +38,7 @@ class DQN(nn.Module):   # from pytorch documentation
             target[idx][torch.argmax(action[idx]).item()] = Q_new
 
         self.optimizer.zero_grad()
-        loss = self.criterion(target, pred)
+        loss = self.loss_fn(target, pred)
         loss.backward()
 
         self.optimizer.step()

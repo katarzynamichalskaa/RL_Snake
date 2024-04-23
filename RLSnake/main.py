@@ -3,7 +3,7 @@ from game import Game
 import numpy as np
 import torch
 
-game = Game(300, 300)
+game = Game(100, 100)
 agent = Agent()
 alpha = 0.5
 epsilon = 80
@@ -33,6 +33,8 @@ if __name__ == "__main__":
             game_over, reward, score = game.step(action)
             new_state = agent.get_state(game)
             new_state = torch.tensor(new_state, dtype=torch.float32).unsqueeze(0)
+
+            #agent.trainer.train_model(state, action, reward, new_state, game_over)
 
             agent.remember(state, action, reward, new_state, game_over)
 
