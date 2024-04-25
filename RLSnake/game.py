@@ -43,7 +43,7 @@ class Game:
         # check game over conditions
         if self.snake.check_boundaries() or self.snake.check_collision(): # or self.snake.wall_detection(self.snake.x, self.snake.y):
             game_over = True
-            reward = -10
+            reward = -12
 
         # check if the snake eats food
         if self.snake.eat():

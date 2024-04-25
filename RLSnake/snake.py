@@ -13,6 +13,7 @@ class Directions(Enum):
     DOWN = 'D'
     RIGHT = 'R'
     LEFT = 'L'
+    NONE = 'None'
 
 
 class Snake:
@@ -22,7 +23,7 @@ class Snake:
         self.height = height
 
         # snake properties
-        self.speed = 15
+        self.speed = 50
         self.unit_per_movement = 5
 
         # walls properties
@@ -36,7 +37,7 @@ class Snake:
         self.y = self.height / 2
         self.x2 = 0
         self.y2 = 0
-        self.direction = Directions.DOWN
+        self.direction = Directions.NONE
         self.snake_segments = [(self.x, self.y)]
         #self.create_walls()
         self.create_food()
@@ -46,7 +47,7 @@ class Snake:
 
     def create_food(self):
         self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
-        while self.foodx in self.snake_segments or self.foody in self.snake_segments: #self.wall_detection(self.foodx, self.foody) or
+        while (self.foodx, self.foody) in self.snake_segments: #self.wall_detection(self.foodx, self.foody) or
             self.create_food()
 
     def create_walls(self):
@@ -82,6 +83,9 @@ class Snake:
             danger_zones[1] = 1         # up wall
         return danger_zones
 
+    def detect_block_danger(self, offset):  # trying to detect segments
+        danger_zones = [0, 0, 0, 0]
+
     def check_collision(self):
         return any((self.x, self.y) == segment for segment in self.snake_segments[1:])
 
@@ -94,25 +98,14 @@ class Snake:
         self.snake_segments.append((self.x, self.y))
 
     def move(self, action):
-        clock_wise = [Directions.RIGHT, Directions.DOWN, Directions.LEFT, Directions.UP]
-        idx = clock_wise.index(self.direction)
+        directions = [Directions.LEFT, Directions.RIGHT, Directions.UP, Directions.DOWN]
+        opposite_directions = [Directions.RIGHT, Directions.LEFT, Directions.DOWN, Directions.UP]
+        actions = [[1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0]]
+        movements = [(-self.unit_per_movement, 0), (self.unit_per_movement, 0), (0, -self.unit_per_movement),
+                     (0, self.unit_per_movement)]
 
-        if np.array_equal(action, [1, 0, 0]):
-            new_dir = clock_wise[idx]  # no change
-        elif np.array_equal(action, [0, 1, 0]):
-            next_idx = (idx + 1) % 4
-            new_dir = clock_wise[next_idx]  # right turn r -> d -> l -> u
-        else:  # [0, 0, 1]
-            next_idx = (idx - 1) % 4
-            new_dir = clock_wise[next_idx]  # left turn r -> u -> l -> d
-
-        self.direction = new_dir
-
-        if self.direction == Directions.RIGHT:
-            self.x += self.unit_per_movement
-        elif self.direction == Directions.LEFT:
-            self.x -= self.unit_per_movement
-        elif self.direction == Directions.DOWN:
-            self.y += self.unit_per_movement
-        elif self.direction == Directions.UP:
-            self.y -= self.unit_per_movement
+        for act, dir, mov in zip(actions, directions, movements):
+            if np.array_equal(action, act) and self.direction != dir and self.direction != opposite_directions[directions.index(dir)]:
+                self.x2, self.y2 = mov
+                self.direction = dir
+                break
