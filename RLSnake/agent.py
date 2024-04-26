@@ -1,7 +1,8 @@
 import random
 import numpy as np
 from collections import deque
-from model import DQN, Trainer
+from model import DQN
+from trainer import Trainer
 from snake import Directions
 
 

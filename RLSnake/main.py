@@ -20,7 +20,6 @@ if __name__ == "__main__":
         game.reset()
 
         for step in range(steps_per_episode):
-
             # get state
             state = agent.get_state(game)
 
