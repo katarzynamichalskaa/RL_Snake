@@ -23,13 +23,14 @@ class Snake:
         self.height = height
 
         # snake properties
-        self.speed = 50
+        self.speed = 300
         self.unit_per_movement = 5
 
         # walls properties
         self.wall_width = 75
         self.wall_length = 155
         self.number_of_walls = 5
+
         self.reset_snake()
 
     def reset_snake(self):
@@ -39,7 +40,7 @@ class Snake:
         self.y2 = 0
         self.direction = Directions.NONE
         self.snake_segments = [(self.x, self.y)]
-        #self.create_walls()
+        self.create_walls()
         self.create_food()
 
     def update_snake_pos(self):
@@ -83,8 +84,28 @@ class Snake:
             danger_zones[1] = 1         # up wall
         return danger_zones
 
-    def detect_block_danger(self, offset):  # trying to detect segments
+    def segment_danger(self, offset):
         danger_zones = [0, 0, 0, 0]
+        if len(self.snake_segments) >= 3:
+            # up
+            if any(self.y - offset < segment[1] < self.y and self.x == segment[0] for segment in self.snake_segments[3:]):
+                danger_zones[1] = 1
+                # print('up danger')
+            # down
+            if any(self.y + offset > segment[1] > self.y and self.x == segment[0] for segment in self.snake_segments[3:]):
+                # print('down danger')
+                danger_zones[3] = 1
+
+            # left
+            if any(self.x - offset < segment[0] < self.x and self.y == segment[1] for segment in self.snake_segments[3:]):
+                # print('left danger')
+                danger_zones[0] = 1
+
+            # right
+            if any(self.x + offset > segment[0] > self.x and self.y == segment[1] for segment in self.snake_segments[3:]):
+                # print('right danger')
+                danger_zones[2] = 1
+        return danger_zones
 
     def check_collision(self):
         return any((self.x, self.y) == segment for segment in self.snake_segments[1:])

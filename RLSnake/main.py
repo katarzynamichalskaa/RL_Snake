@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from plotter import Plotter
 
-game = Game(100, 100)
+game = Game(500, 500)
 plotter = Plotter()
 agent = Agent()
 alpha = 0.5
@@ -13,7 +13,8 @@ plot_scores = []
 
 if __name__ == "__main__":
     num_episodes = 10000
-    steps_per_episode = 2000
+    steps_per_episode = 10000
+
     for episode in range(num_episodes):
 
         # reset game every episode
@@ -54,7 +55,8 @@ if __name__ == "__main__":
 
             if game_over or step == steps_per_episode - 1:
                 agent.number_of_games += 1
-
+                # if agent.number_of_games > 150:
+                #    game.snake.speed = 5
                 # train model from random sample
                 agent.train_long_memory()
 

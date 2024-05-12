@@ -14,7 +14,7 @@ class Agent:
         self.BATCH_SIZE = 1000
         self.lr = 0.001
         self.gamma = 0.9
-        self.model = DQN(n_observations=14, n_actions=4)
+        self.model = DQN(n_observations=18, n_actions=4)
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
 
     def remember(self, state, action, reward, next_state, game_over):
@@ -29,10 +29,14 @@ class Agent:
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_model(states, actions, rewards, next_states, dones)
 
-    def get_state(self, game):
+    @staticmethod
+    def get_state(game):
 
         # borders
         danger_left, danger_up, danger_right, danger_down = game.snake.check_danger(2)
+
+        # segment_borders
+        s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(7)
 
         # food loc
         food_left = game.snake.x < game.snake.foodx
@@ -62,10 +66,12 @@ class Agent:
         # full state
         state = [food_right, food_left, food_up, food_down, perfect_x, perfect_y,
                  danger_left, danger_up, danger_right, danger_down,
-                 dir_left, dir_right, dir_up, dir_down]
+                 dir_left, dir_right, dir_up, dir_down,
+                 s_danger_left, s_danger_up, s_danger_right, s_danger_down]
 
         return np.array(state, dtype=int)
 
-    def random_action(self):
+    @staticmethod
+    def random_action():
         actions = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
         return random.choice(actions)

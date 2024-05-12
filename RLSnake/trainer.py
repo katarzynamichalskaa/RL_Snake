@@ -11,7 +11,8 @@ class Trainer:
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.loss_fn = nn.HuberLoss()
 
-    def convert_to_tensor(self, state, action, reward, next_state, done):
+    @staticmethod
+    def convert_to_tensor(state, action, reward, next_state, done):
         # to tensor
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
