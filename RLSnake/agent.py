@@ -31,12 +31,11 @@ class Agent:
 
     @staticmethod
     def get_state(game):
-
         # borders
-        danger_left, danger_up, danger_right, danger_down = game.snake.check_danger(2)
+        danger_left, danger_up, danger_right, danger_down = game.snake.check_danger(offset=2)
 
         # segment_borders
-        s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(7)
+        s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(offset=7)
 
         # food loc
         food_left = game.snake.x < game.snake.foodx

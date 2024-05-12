@@ -23,7 +23,7 @@ class Game:
         self.snake = Snake(width, height, self.dis)
         self.score = len(self.snake.snake_segments) - 1
 
-    def step(self, action): # modified to step
+    def step(self, action):  # modified to step
         game_over = False
         reward = 0
 
@@ -41,7 +41,7 @@ class Game:
         self.snake.update_snake_pos()
 
         # check game over conditions
-        if self.snake.check_boundaries() or self.snake.check_collision(): # or self.snake.wall_detection(self.snake.x, self.snake.y):
+        if self.snake.check_boundaries() or self.snake.check_collision():  # or self.snake.wall_detection(self.snake.x, self.snake.y):
             game_over = True
             reward = -12
 

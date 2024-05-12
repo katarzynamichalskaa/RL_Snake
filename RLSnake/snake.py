@@ -87,24 +87,19 @@ class Snake:
     def segment_danger(self, offset):
         danger_zones = [0, 0, 0, 0]
         if len(self.snake_segments) >= 3:
-            # up
-            if any(self.y - offset < segment[1] < self.y and self.x == segment[0] for segment in self.snake_segments[3:]):
-                danger_zones[1] = 1
-                # print('up danger')
-            # down
-            if any(self.y + offset > segment[1] > self.y and self.x == segment[0] for segment in self.snake_segments[3:]):
-                # print('down danger')
-                danger_zones[3] = 1
-
-            # left
-            if any(self.x - offset < segment[0] < self.x and self.y == segment[1] for segment in self.snake_segments[3:]):
-                # print('left danger')
-                danger_zones[0] = 1
-
-            # right
-            if any(self.x + offset > segment[0] > self.x and self.y == segment[1] for segment in self.snake_segments[3:]):
-                # print('right danger')
-                danger_zones[2] = 1
+            for segment in self.snake_segments[3:]:
+                # up
+                if self.y - offset < segment[1] < self.y and self.x == segment[0]:
+                    danger_zones[1] = 1
+                # down
+                if self.y + offset > segment[1] > self.y and self.x == segment[0]:
+                    danger_zones[3] = 1
+                # left
+                if self.x - offset < segment[0] < self.x and self.y == segment[1]:
+                    danger_zones[0] = 1
+                # right
+                if self.x + offset > segment[0] > self.x and self.y == segment[1]:
+                    danger_zones[2] = 1
         return danger_zones
 
     def check_collision(self):
