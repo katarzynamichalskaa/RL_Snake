@@ -10,6 +10,7 @@ agent = Agent()
 alpha = 0.5
 epsilon = 80
 plot_scores = []
+avg_scores = []
 
 if __name__ == "__main__":
     num_episodes = 10000
@@ -55,15 +56,20 @@ if __name__ == "__main__":
 
             if game_over or step == steps_per_episode - 1:
                 agent.number_of_games += 1
-                # if agent.number_of_games > 150:
-                #    game.snake.speed = 5
+
                 # train model from random sample
                 agent.train_long_memory()
 
-                # plot
-                print('Game', agent.number_of_games, 'Score', score)
+                # append scores
                 plot_scores.append(score)
-                plotter.plot(plot_scores)
+                avg_score = sum(plot_scores) / len(plot_scores)
+                avg_scores.append(avg_score)
+
+                # plot every 50 games
+                if agent.number_of_games % 50 == 0:
+                    plotter.plot(plot_scores, avg_scores)
+
+                print('Game', agent.number_of_games, 'Score', score)
 
                 break
 
