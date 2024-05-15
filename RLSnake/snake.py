@@ -22,14 +22,25 @@ class Snake:
         self.width = width
         self.height = height
 
+        # food properties
+        self.food_y = None
+        self.food_x = None
+
         # snake properties
-        self.speed = 300
+        self.speed = 500
         self.unit_per_movement = 5
+        self.y = None
+        self.x = None
+        self.y2 = None
+        self.x2 = None
+        self.snake_segments = None
+        self.direction = None
 
         # walls properties
         self.wall_width = 75
         self.wall_length = 155
         self.number_of_walls = 5
+        self.walls_position = None
 
         self.reset_snake()
 
@@ -47,8 +58,8 @@ class Snake:
         self.snake_segments = [(self.x, self.y)] + self.snake_segments[:-1]
 
     def create_food(self):
-        self.foodx, self.foody = random_coords([self.width, self.height], self.unit_per_movement)
-        while (self.foodx, self.foody) in self.snake_segments: #self.wall_detection(self.foodx, self.foody) or
+        self.food_x, self.food_y = random_coords([self.width, self.height], self.unit_per_movement)
+        while (self.food_x, self.food_y) in self.snake_segments:  # self.wall_detection(self.food_x, self.food_y) or
             self.create_food()
 
     def create_walls(self):
@@ -75,38 +86,37 @@ class Snake:
     def check_danger(self, offset):
         danger_zones = [0, 0, 0, 0]
         if self.x + offset >= self.width:
-            danger_zones[2] = 1         # right wall
+            danger_zones[2] = 1  # right wall
         elif self.x - offset < 0:
-            danger_zones[0] = 1         # left wall
+            danger_zones[0] = 1  # left wall
         elif self.y + offset >= self.height:
-            danger_zones[3] = 1         # down wall
+            danger_zones[3] = 1  # down wall
         elif self.y - offset < 0:
-            danger_zones[1] = 1         # up wall
+            danger_zones[1] = 1  # up wall
         return danger_zones
 
     def segment_danger(self, offset):
         danger_zones = [0, 0, 0, 0]
         if len(self.snake_segments) >= 3:
-            for segment in self.snake_segments[3:]:
-                # up
-                if self.y - offset < segment[1] < self.y and self.x == segment[0]:
-                    danger_zones[1] = 1
-                # down
-                if self.y + offset > segment[1] > self.y and self.x == segment[0]:
-                    danger_zones[3] = 1
-                # left
-                if self.x - offset < segment[0] < self.x and self.y == segment[1]:
-                    danger_zones[0] = 1
-                # right
-                if self.x + offset > segment[0] > self.x and self.y == segment[1]:
-                    danger_zones[2] = 1
+            if any(self.y - offset < segment[1] < self.y and self.x == segment[0] for segment in  # up
+                   self.snake_segments[3:]):
+                danger_zones[1] = 1
+            if any(self.y + offset > segment[1] > self.y and self.x == segment[0] for segment in  # down
+                   self.snake_segments[3:]):
+                danger_zones[3] = 1
+            if any(self.x - offset < segment[0] < self.x and self.y == segment[1] for segment in  # left
+                   self.snake_segments[3:]):
+                danger_zones[0] = 1
+            if any(self.x + offset > segment[0] > self.x and self.y == segment[1] for segment in  # right
+                   self.snake_segments[3:]):
+                danger_zones[2] = 1
         return danger_zones
 
     def check_collision(self):
         return any((self.x, self.y) == segment for segment in self.snake_segments[1:])
 
     def eat(self):
-        if (self.x, self.y) == (self.foodx, self.foody):
+        if (self.x, self.y) == (self.food_x, self.food_y):
             self.create_food()
             return True
 

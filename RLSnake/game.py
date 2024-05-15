@@ -31,7 +31,7 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit()
-                self.gameover()
+                self.game_over()
                 game_over = True
 
         # move the snake
@@ -59,7 +59,7 @@ class Game:
 
         return game_over, reward, self.score
 
-    def gameover(self):
+    def game_over(self):
         self.send_message("Game over", (246, 0, 0), [self.width / 2, self.height / 2], 30)
         time.sleep(2)
 
@@ -68,11 +68,12 @@ class Game:
 
     def send_message(self, msg, color, dest, size):
         font_style = pygame.font.SysFont('font.ttf', size)
-        mesg = font_style.render(msg, True, color)
-        self.dis.blit(mesg, dest)
+        mes = font_style.render(msg, True, color)
+        self.dis.blit(mes, dest)
         pygame.display.update()
 
-    def quit(self):
+    @staticmethod
+    def quit():
         pygame.quit()
 
     def render(self):
@@ -82,7 +83,7 @@ class Game:
                             Color.SNAKE.value,
                             self.snake.unit_per_movement,
                             self.snake.unit_per_movement)
-        self.render_objects([(self.snake.foodx, self.snake.foody)],
+        self.render_objects([(self.snake.food_x, self.snake.food_y)],
                             Color.FOOD.value,
                             self.snake.unit_per_movement,
                             self.snake.unit_per_movement)
