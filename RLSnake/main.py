@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from plotter import Plotter
 
-game = Game(500, 500)
+game = Game(350, 350)
 plotter = Plotter()
 agent = Agent()
 alpha = 0.5
