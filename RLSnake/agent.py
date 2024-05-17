@@ -80,13 +80,16 @@ class Agent:
         # segment_borders
         s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(offset=7)
 
-        if danger_left == 1 or s_danger_left == 1:
+        # wall_borders
+        w_danger_left, w_danger_up, w_danger_right, w_danger_down = game.snake.wall_danger(offset=7)
+
+        if danger_left == 1 or s_danger_left or w_danger_left == 1:
             dangerous_info[0] = 1
-        if danger_up == 1 or s_danger_up == 1:
+        if danger_up == 1 or s_danger_up or w_danger_up == 1:
             dangerous_info[1] = 1
-        if danger_right == 1 or s_danger_right == 1:
+        if danger_right == 1 or s_danger_right or w_danger_right == 1:
             dangerous_info[2] = 1
-        if danger_down == 1 or s_danger_down == 1:
+        if danger_down == 1 or s_danger_down or w_danger_down == 1:
             dangerous_info[3] = 1
 
         return dangerous_info

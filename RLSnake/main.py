@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from plotter import Plotter
 
-game = Game(350, 350)
+game = Game(500, 500)
 plotter = Plotter()
 agent = Agent()
 alpha = 0.5
@@ -26,7 +26,7 @@ if __name__ == "__main__":
             state = agent.get_state(game)
 
             # exploration vs exploitation
-            if agent.number_of_games < 150:
+            if agent.number_of_games < 400:
                 if epsilon > 10:
                     epsilon = epsilon - agent.number_of_games
             else:
@@ -68,8 +68,11 @@ if __name__ == "__main__":
                 # plot every 50 games
                 if agent.number_of_games % 50 == 0:
                     plotter.plot(plot_scores, avg_scores)
+                if agent.number_of_games > 800:
+                    game.snake.speed = 30
+
+
 
                 print('Game', agent.number_of_games, 'Score', score)
 
                 break
-
