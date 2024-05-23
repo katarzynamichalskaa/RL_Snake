@@ -1,6 +1,9 @@
 import random
 import numpy as np
 from collections import deque
+
+import torch
+
 from model import DQN
 from trainer import Trainer
 from snake import Directions
@@ -16,6 +19,7 @@ class Agent:
         self.gamma = 0.9
         self.model = DQN(n_observations=14, n_actions=4)
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
+        self.PATH = 'model/snake_model.pth'
 
     def remember(self, state, action, reward, next_state, game_over):
         self.memory.append((state, action, reward, next_state, game_over))
@@ -93,4 +97,16 @@ class Agent:
             dangerous_info[3] = 1
 
         return dangerous_info
+
+    def save_model(self):
+        torch.save(self.model, self.PATH)
+
+    def load_model(self):
+        model = torch.load(self.PATH)
+        model.eval()
+        return model
+
+
+
+
 

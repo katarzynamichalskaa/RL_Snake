@@ -1,3 +1,5 @@
+import time
+
 from agent import Agent
 from game import Game
 import numpy as np
@@ -6,15 +8,25 @@ from plotter import Plotter
 
 game = Game(500, 500)
 plotter = Plotter()
+# new agent
 agent = Agent()
+
+
+if True:
+    model = Agent().load_model()
+    load_status='loaded'
+
+agent.model = model
+
+
 alpha = 0.5
 epsilon = 80
 plot_scores = []
 avg_scores = []
 
 if __name__ == "__main__":
-    num_episodes = 10000
-    steps_per_episode = 10000
+    num_episodes = 500
+    steps_per_episode = 100000
 
     for episode in range(num_episodes):
 
@@ -27,8 +39,11 @@ if __name__ == "__main__":
 
             # exploration vs exploitation
             if agent.number_of_games < 400:
-                if epsilon > 10:
+
+                if epsilon > 10 and load_status != 'loaded':
                     epsilon = epsilon - agent.number_of_games
+                else:
+                    epsilon = 0
             else:
                 epsilon = 0
 
@@ -66,7 +81,7 @@ if __name__ == "__main__":
                 avg_scores.append(avg_score)
 
                 # plot every 50 games
-                if agent.number_of_games % 50 == 0:
+                if agent.number_of_games % 10 == 0:
                     plotter.plot(plot_scores, avg_scores)
                 if agent.number_of_games > 800:
                     game.snake.speed = 30
@@ -76,3 +91,9 @@ if __name__ == "__main__":
                 print('Game', agent.number_of_games, 'Score', score)
 
                 break
+    #agent.save_model()
+    #time.sleep(10)
+    #agent.load_model()
+
+
+

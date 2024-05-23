@@ -27,7 +27,7 @@ class Snake:
         self.food_x = None
 
         # snake properties
-        self.speed = 500
+        self.speed = 350
         self.unit_per_movement = 5
         self.y = None
         self.x = None
