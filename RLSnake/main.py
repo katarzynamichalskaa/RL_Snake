@@ -9,6 +9,7 @@ MODEL_LOADING_BOOL = True
 game = Game(500, 500)
 plotter = Plotter()
 agent = Agent()
+
 alpha = 0.5
 epsilon = 3000
 plot_scores = []
