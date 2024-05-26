@@ -3,6 +3,8 @@ import time
 from snake import Snake
 from enum import Enum
 
+DISPLAY_BOOL = True
+
 
 class Color(Enum):
     SNAKE = (255, 0, 0)
@@ -13,14 +15,14 @@ class Color(Enum):
 
 class Game:
     def __init__(self, width, height):
-        pygame.init()
-        pygame.display.set_caption('Snake')
-
-        self.dis = pygame.display.set_mode((width, height))
-        self.clock = pygame.time.Clock()
+        if DISPLAY_BOOL:
+            pygame.init()
+            pygame.display.set_caption('Snake')
+            self.dis = pygame.display.set_mode((width, height))
+            self.clock = pygame.time.Clock()
         self.width = width
         self.height = height
-        self.snake = Snake(width, height, self.dis)
+        self.snake = Snake(width, height)
         self.score = len(self.snake.snake_segments) - 1
 
     def step(self, action):  # modified to step
@@ -28,11 +30,12 @@ class Game:
         reward = 0
 
         # events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.quit()
-                self.game_over()
-                game_over = True
+        if DISPLAY_BOOL:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit()
+                    self.game_over()
+                    game_over = True
 
         # move the snake
         self.snake.move(action)
@@ -41,7 +44,11 @@ class Game:
         self.snake.update_snake_pos()
 
         # check game over conditions
-        if self.snake.check_boundaries() or self.snake.check_collision() or self.snake.wall_detection(self.snake.x, self.snake.y):
+        if self.snake.check_boundaries() or self.snake.check_collision():
+            game_over = True
+            reward = -12
+
+        if self.snake.wall_detection(self.snake.x, self.snake.y):
             game_over = True
             reward = -12
 
@@ -52,10 +59,11 @@ class Game:
             reward = 10
 
         # render the game
-        self.render()
-        self.display_score()
-        self.clock.tick(self.snake.speed)
-        pygame.display.update()
+        if DISPLAY_BOOL:
+            self.render()
+            self.display_score()
+            self.clock.tick(self.snake.speed)
+            pygame.display.update()
 
         return game_over, reward, self.score
 
@@ -92,7 +100,6 @@ class Game:
                             Color.WALL.value,
                             self.snake.wall_width,
                             self.snake.wall_length)
-
 
     def render_objects(self, objects, color, width, height):
         for obj in objects:

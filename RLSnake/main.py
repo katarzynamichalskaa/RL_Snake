@@ -1,32 +1,26 @@
-import time
-
 from agent import Agent
 from game import Game
 import numpy as np
 import torch
 from plotter import Plotter
 
+MODEL_LOADING_BOOL = True
+
 game = Game(500, 500)
 plotter = Plotter()
-# new agent
 agent = Agent()
-
-
-if True:
-    model = Agent().load_model()
-    load_status='loaded'
-
-agent.model = model
-
-
 alpha = 0.5
-epsilon = 80
+epsilon = 3000
 plot_scores = []
 avg_scores = []
 
+if MODEL_LOADING_BOOL:
+    model = Agent().load_model()
+    agent.model = model
+
 if __name__ == "__main__":
-    num_episodes = 500
-    steps_per_episode = 100000
+    num_episodes = 15000
+    steps_per_episode = 50000
 
     for episode in range(num_episodes):
 
@@ -38,17 +32,13 @@ if __name__ == "__main__":
             state = agent.get_state(game)
 
             # exploration vs exploitation
-            if agent.number_of_games < 400:
-
-                if epsilon > 10 and load_status != 'loaded':
-                    epsilon = epsilon - agent.number_of_games
-                else:
-                    epsilon = 0
+            if not MODEL_LOADING_BOOL:
+                epsilon = epsilon - 1
             else:
-                epsilon = 0
+                epsilon = -1
 
             # choose random action
-            if np.random.randint(0, 200) < epsilon:
+            if np.random.randint(0, 3000) < epsilon:
                 action = agent.random_action()
             # choose best action based on Q value
             else:
@@ -81,19 +71,17 @@ if __name__ == "__main__":
                 avg_scores.append(avg_score)
 
                 # plot every 50 games
-                if agent.number_of_games % 10 == 0:
+                if agent.number_of_games % 100 == 0:
                     plotter.plot(plot_scores, avg_scores)
-                if agent.number_of_games > 800:
-                    game.snake.speed = 30
-
-
 
                 print('Game', agent.number_of_games, 'Score', score)
 
+                if agent.number_of_games % 1000 == 0:
+                    agent.save_model()
+
                 break
-    #agent.save_model()
-    #time.sleep(10)
-    #agent.load_model()
+
+
 
 
 

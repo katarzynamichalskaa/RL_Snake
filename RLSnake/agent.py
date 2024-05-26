@@ -19,7 +19,7 @@ class Agent:
         self.gamma = 0.9
         self.model = DQN(n_observations=14, n_actions=4)
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
-        self.PATH = 'model/snake_model.pth'
+        self.PATH = 'model/wariant3.pth'
 
     def remember(self, state, action, reward, next_state, game_over):
         self.memory.append((state, action, reward, next_state, game_over))
@@ -67,7 +67,7 @@ class Agent:
                  dir_left, dir_right, dir_up, dir_down,
                  l, u, r, d]
 
-        return np.array(state, dtype=int)
+        return state
 
     @staticmethod
     def random_action():

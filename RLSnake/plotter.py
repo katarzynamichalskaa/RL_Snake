@@ -1,12 +1,11 @@
-import matplotlib.pyplot as plt
 from IPython import display
-
 import matplotlib.pyplot as plt
 
 
 class Plotter:
     def __init__(self):
         plt.ion()
+
     def plot(self, scores, avg_scores):
         display.clear_output(wait=True)
         display.display(plt.gcf())

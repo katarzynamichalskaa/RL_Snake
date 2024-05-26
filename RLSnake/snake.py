@@ -17,8 +17,7 @@ class Directions(Enum):
 
 
 class Snake:
-    def __init__(self, width, height, display_surface):
-        self.dis = display_surface
+    def __init__(self, width, height):
         self.width = width
         self.height = height
 
@@ -27,7 +26,7 @@ class Snake:
         self.food_x = None
 
         # snake properties
-        self.speed = 350
+        self.speed = 150
         self.unit_per_movement = 5
         self.y = None
         self.x = None
@@ -48,8 +47,8 @@ class Snake:
         self.x = self.width / 2
         self.y = self.height / 2
         self.x2 = 0
-        self.first_game = False
         self.y2 = 0
+        self.first_game = False
         self.direction = Directions.NONE
         self.snake_segments = [(self.x, self.y)]
         self.create_walls()
@@ -75,8 +74,6 @@ class Snake:
             while self.wall_detection(self.x, self.y):
                 self.walls_position = self.create_walls()
         return self.walls_position
-
-
 
     def wall_detection(self, x, y):
         walls_area = self.walls_position
@@ -121,20 +118,20 @@ class Snake:
     def wall_danger(self, offset):
         danger_zones = [0, 0, 0, 0]
         # LEFT
-        if any(self.x - offset < wall[0] + wall[2] and self.x > wall[0] + wall[2] and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
-            print("LEFT DANGER")
+        if any(self.x - offset < wall[0] + wall[2] < self.x and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
+            #print("LEFT DANGER")
             danger_zones[0] = 1
         # UP
-        if any(self.y - offset < wall[1] + wall[3] and self.y > wall[1] + wall[3] and wall[0] <= self.x <= wall[0]+wall[2] for wall in self.walls_position):
-            print("UP DANGER")
+        if any(self.y - offset < wall[1] + wall[3] < self.y and wall[0] <= self.x <= wall[0] + wall[2] for wall in self.walls_position):
+            #print("UP DANGER")
             danger_zones[1] = 1
         # RIGHT
-        if any(self.x + offset > wall[0] and self.x < wall[0] and wall[1] <= self.y <= wall[1]+wall[3] for wall in self.walls_position):
-            print("RIGHT DANGER")
+        if any(self.x + offset > wall[0] > self.x and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
+            #print("RIGHT DANGER")
             danger_zones[2] = 1
         # DOWN
-        if any(self.y + offset > wall[1] and self.y < wall[1] and wall[0] <= self.x <= wall[0]+wall[2] for wall in self.walls_position):
-            print("DOWN DANGER")
+        if any(self.y + offset > wall[1] > self.y and wall[0] <= self.x <= wall[0] + wall[2] for wall in self.walls_position):
+            #print("DOWN DANGER")
             danger_zones[3] = 1
 
         return danger_zones
