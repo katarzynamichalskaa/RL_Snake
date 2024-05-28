@@ -2,13 +2,12 @@ import pygame
 import time
 from snake import Snake
 from enum import Enum
-
-DISPLAY_BOOL = True
+from utils import DISPLAY_BOOL
 
 
 class Color(Enum):
-    SNAKE = (255, 0, 0)
-    FOOD = (0, 0, 255)
+    SNAKE = (0, 128, 0)
+    FOOD = (255, 0, 0)
     WALL = (0, 0, 0)
     BACKGROUND = (245, 245, 190)
 
@@ -44,11 +43,8 @@ class Game:
         self.snake.update_snake_pos()
 
         # check game over conditions
-        if self.snake.check_boundaries() or self.snake.check_collision():
-            game_over = True
-            reward = -12
-
-        if self.snake.wall_detection(self.snake.x, self.snake.y):
+        if (self.snake.check_boundaries() or self.snake.check_collision(self.snake.snake_segments[1:])
+                or self.snake.check_collision(self.snake.walls_position)):
             game_over = True
             reward = -12
 

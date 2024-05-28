@@ -3,15 +3,14 @@ from game import Game
 import numpy as np
 import torch
 from plotter import Plotter
-
-MODEL_LOADING_BOOL = True
+from utils import MODEL_LOADING_BOOL
 
 game = Game(500, 500)
 plotter = Plotter()
 agent = Agent()
 
 alpha = 0.5
-epsilon = 3000
+epsilon = 300
 plot_scores = []
 avg_scores = []
 
@@ -39,7 +38,7 @@ if __name__ == "__main__":
                 epsilon = -1
 
             # choose random action
-            if np.random.randint(0, 3000) < epsilon:
+            if np.random.randint(0, 300) < epsilon:
                 action = agent.random_action()
             # choose best action based on Q value
             else:

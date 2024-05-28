@@ -1,9 +1,6 @@
 import random
-import numpy as np
 from collections import deque
-
 import torch
-
 from model import DQN
 from trainer import Trainer
 from snake import Directions
@@ -17,9 +14,9 @@ class Agent:
         self.BATCH_SIZE = 1000
         self.lr = 0.001
         self.gamma = 0.9
-        self.model = DQN(n_observations=14, n_actions=4)
+        self.model = DQN(n_observations=24, n_actions=4)
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
-        self.PATH = 'model/wariant3.pth'
+        self.PATH = 'model/wariant5.pth'
 
     def remember(self, state, action, reward, next_state, game_over):
         self.memory.append((state, action, reward, next_state, game_over))
@@ -33,17 +30,24 @@ class Agent:
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_model(states, actions, rewards, next_states, dones)
 
-    def get_state(self, game):
-        # danger info
-        l, u, r, d = self.join_danger_info(game)
+    @staticmethod
+    def get_state(game):
+        # borders
+        danger_left, danger_up, danger_right, danger_down = game.snake.borders_danger(offset=2)
+
+        # segment_borders
+        s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(offset=7)
+
+        # wall_borders
+        l, r, u, d, px, py = game.snake.wall_danger(7)
 
         # food loc
-        food_left = game.snake.x < game.snake.food_x
-        food_right = game.snake.x > game.snake.food_x
-        food_up = game.snake.y < game.snake.food_y
-        food_down = game.snake.y > game.snake.food_y
-        perfect_x = game.snake.x == game.snake.food_x
-        perfect_y = game.snake.y == game.snake.food_y
+        food_left = int(game.snake.x < game.snake.food_x)
+        food_right = int(game.snake.x > game.snake.food_x)
+        food_up = int(game.snake.y < game.snake.food_y)
+        food_down = int(game.snake.y > game.snake.food_y)
+        perfect_x = int(game.snake.x == game.snake.food_x)
+        perfect_y = int(game.snake.y == game.snake.food_y)
 
         # snake direction
         direction = game.snake.direction
@@ -65,38 +69,15 @@ class Agent:
         # full state
         state = [food_right, food_left, food_up, food_down, perfect_x, perfect_y,
                  dir_left, dir_right, dir_up, dir_down,
-                 l, u, r, d]
-
+                 danger_left, danger_up, danger_right, danger_down,
+                 s_danger_left, s_danger_up, s_danger_right, s_danger_down,
+                 l, r, u, d, px, py]
         return state
 
     @staticmethod
     def random_action():
         actions = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
         return random.choice(actions)
-
-    @staticmethod
-    def join_danger_info(game):
-        dangerous_info = [0, 0, 0, 0]
-
-        # borders
-        danger_left, danger_up, danger_right, danger_down = game.snake.check_danger(offset=2)
-
-        # segment_borders
-        s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(offset=7)
-
-        # wall_borders
-        w_danger_left, w_danger_up, w_danger_right, w_danger_down = game.snake.wall_danger(offset=7)
-
-        if danger_left == 1 or s_danger_left or w_danger_left == 1:
-            dangerous_info[0] = 1
-        if danger_up == 1 or s_danger_up or w_danger_up == 1:
-            dangerous_info[1] = 1
-        if danger_right == 1 or s_danger_right or w_danger_right == 1:
-            dangerous_info[2] = 1
-        if danger_down == 1 or s_danger_down or w_danger_down == 1:
-            dangerous_info[3] = 1
-
-        return dangerous_info
 
     def save_model(self):
         torch.save(self.model, self.PATH)
