@@ -1,6 +1,7 @@
 from enum import Enum
 import numpy as np
-from utils import GENERATE_OBSTACLES, random_coords
+from utils import GENERATE_OBSTACLES
+import random
 
 
 class Directions(Enum):
@@ -21,7 +22,7 @@ class Snake:
         self.food_x = None
 
         # snake properties
-        self.speed = 700
+        self.speed = 70
         self.unit_per_movement = 5
         self.y = None
         self.x = None
@@ -32,7 +33,7 @@ class Snake:
 
         # walls properties
         if GENERATE_OBSTACLES:
-            self.number_of_walls = 10
+            self.number_of_walls = 20
         else:
             self.number_of_walls = 0
 
@@ -57,13 +58,13 @@ class Snake:
         self.snake_segments = [(self.x, self.y)] + self.snake_segments[:-1]
 
     def create_food(self):
-        self.food_x, self.food_y = random_coords([self.width, self.height], 10)
+        self.food_x, self.food_y = self.random_coords([self.width, self.height], 10)
         while (self.food_x, self.food_y) in self.snake_segments or (self.food_x, self.food_y) in self.walls_position:
             self.create_food()
 
     def create_walls(self):
         for i in range(0, self.number_of_walls):
-            wall_x, wall_y = random_coords([self.width, self.height], 10)
+            wall_x, wall_y = self.random_coords([self.width, self.height], 10)
             if (wall_x, wall_y) in self.snake_segments:
                 self.create_walls()
             else:
@@ -113,6 +114,16 @@ class Snake:
             ]
         return danger
 
+    def map_around(self):
+        positions_to_check = [(self.x + i, self.y + j) for i in range(-3, 4) for j in range(-3, 4)]
+        vector = []
+        for position in positions_to_check:
+            if position in self.snake_segments[1:] or position in self.walls_position:
+                vector.append(1)
+            else:
+                vector.append(0)
+        return vector
+
     def check_collision(self, snake_property):
         return any((self.x, self.y) == item for item in snake_property)
 
@@ -137,3 +148,7 @@ class Snake:
                 self.x2, self.y2 = mov
                 self.direction = dir
                 break
+
+    @staticmethod
+    def random_coords(dims, unit):
+        return tuple(round(random.randrange(0, dim - unit) / 10.0) * 10.0 for dim in dims)

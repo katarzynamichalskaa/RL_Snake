@@ -9,8 +9,9 @@ game = Game(500, 500)
 plotter = Plotter()
 agent = Agent()
 
+record = 0
 alpha = 0.5
-epsilon = 300
+epsilon = 1000
 plot_scores = []
 avg_scores = []
 
@@ -38,7 +39,7 @@ if __name__ == "__main__":
                 epsilon = -1
 
             # choose random action
-            if np.random.randint(0, 300) < epsilon:
+            if np.random.randint(0, 800) < epsilon:
                 action = agent.random_action()
             # choose best action based on Q value
             else:
@@ -70,13 +71,13 @@ if __name__ == "__main__":
                 avg_score = sum(plot_scores) / len(plot_scores)
                 avg_scores.append(avg_score)
 
-                # plot every 50 games
+                # plot every 100 games
                 if agent.number_of_games % 100 == 0:
                     plotter.plot(plot_scores, avg_scores)
-
-                print('Game', agent.number_of_games, 'Score', score)
+                    print('Game', agent.number_of_games, 'Score', score)
 
                 if agent.number_of_games % 1000 == 0:
+                    record = score
                     agent.save_model()
 
                 break

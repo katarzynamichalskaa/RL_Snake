@@ -4,6 +4,7 @@ import torch
 from model import DQN
 from trainer import Trainer
 from snake import Directions
+from utils import PATH
 
 
 class Agent:
@@ -14,9 +15,8 @@ class Agent:
         self.BATCH_SIZE = 1000
         self.lr = 0.001
         self.gamma = 0.9
-        self.model = DQN(n_observations=24, n_actions=4)
+        self.model = DQN(n_observations=63, n_actions=4)
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
-        self.PATH = 'model/wariant5.pth'
 
     def remember(self, state, action, reward, next_state, game_over):
         self.memory.append((state, action, reward, next_state, game_over))
@@ -70,8 +70,9 @@ class Agent:
         state = [food_right, food_left, food_up, food_down, perfect_x, perfect_y,
                  dir_left, dir_right, dir_up, dir_down,
                  danger_left, danger_up, danger_right, danger_down,
-                 s_danger_left, s_danger_up, s_danger_right, s_danger_down,
-                 l, r, u, d, px, py]
+                 # s_danger_left, s_danger_up, s_danger_right, s_danger_down,
+                 # l, r, u, d, px, py,
+                 *game.snake.map_around()]
         return state
 
     @staticmethod
@@ -80,10 +81,11 @@ class Agent:
         return random.choice(actions)
 
     def save_model(self):
-        torch.save(self.model, self.PATH)
+        torch.save(self.model, PATH)
 
-    def load_model(self):
-        model = torch.load(self.PATH)
+    @staticmethod
+    def load_model():
+        model = torch.load(PATH)
         model.eval()
         return model
 
