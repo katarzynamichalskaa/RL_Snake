@@ -1,6 +1,6 @@
 # global variables
-DISPLAY_BOOL = True
+DISPLAY_BOOL = False
 GENERATE_OBSTACLES = True
-MODEL_LOADING_BOOL = True
+MODEL_LOADING_BOOL = False
 PATH = 'model/masakra.pth'
 

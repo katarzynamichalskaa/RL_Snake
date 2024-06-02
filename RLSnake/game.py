@@ -35,6 +35,9 @@ class Game:
                     self.quit()
                     self.game_over()
                     game_over = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_p:
+                        game_over = True
 
         # move the snake
         self.snake.move(action)

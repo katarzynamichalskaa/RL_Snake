@@ -34,7 +34,6 @@ if __name__ == "__main__":
 
             # exploration vs exploitation
             if not MODEL_LOADING_BOOL:
-
                 if epsilon > 10:
                     epsilon = epsilon - 1
                 else:
@@ -48,7 +47,7 @@ if __name__ == "__main__":
             # choose best action based on Q value
             else:
                 action = [0, 0, 0, 0]
-                state_torch = torch.tensor(state, dtype=torch.float)
+                state_torch = (torch.tensor(state, dtype=torch.float)).to(next(agent.model.parameters()).device)  # cuda
                 index_action = torch.argmax(agent.model(state_torch)).item()
                 action[index_action] = 1
 
@@ -78,6 +77,7 @@ if __name__ == "__main__":
                 # plot every 100 games
                 if agent.number_of_games % 25 == 0:
                     plotter.plot(plot_scores, avg_scores)
+
                 print('Game', agent.number_of_games, 'Score', score)
 
                 if agent.number_of_games == 400:

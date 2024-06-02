@@ -38,6 +38,7 @@ class Snake:
             self.number_of_walls = 90
         else:
             self.number_of_walls = 0
+        self.walls_position = []
         self.wall_width = self.unit_per_movement
         self.wall_length = self.unit_per_movement
         self.create_walls()
@@ -117,23 +118,18 @@ class Snake:
 
     def wall_danger(self, offset):
         danger_zones = [0, 0, 0, 0]
-        # LEFT
-        if any(self.x - 7 < wall[0] < self.x and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
-            # print("LEFT DANGER")
+        if any(self.x - offset < wall[0] < self.x and wall[1] <= self.y <= wall[1] + wall[3]          # left
+               for wall in self.walls_position):
             danger_zones[0] = 1
-        # UP
-        if any(self.y - 7 < wall[1] < self.y and wall[0] <= self.x <= wall[0] + wall[2] for wall in self.walls_position):
-            # print("UP DANGER")
+        if any(self.y - offset < wall[1] < self.y and wall[0] <= self.x <= wall[0] + wall[2]          # up
+               for wall in self.walls_position):
             danger_zones[1] = 1
-        # RIGHT
-        if any(self.x + 7 > wall[0] > self.x and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
-            # print("RIGHT DANGER")
-            danger_zones[2] = 1
-        # DOWN
-        if any(self.y + 7 > wall[1] > self.y and wall[0] <= self.x <= wall[0] + wall[2] for wall in self.walls_position):
-            # print("DOWN DANGER")
+        if any(self.x + offset > wall[0] > self.x and wall[1] <= self.y <= wall[1] + wall[3]          # right
+               for wall in self.walls_position):
+            danger_zones[2] = 1                                                                       # down
+        if any(self.y + offset > wall[1] > self.y and wall[0] <= self.x <= wall[0] + wall[2]
+               for wall in self.walls_position):
             danger_zones[3] = 1
-
         return danger_zones
 
     def map_around(self):
@@ -151,12 +147,10 @@ class Snake:
             perfect_x = 1
         else:
             perfect_x = 0
-
         if self.y == self.food_y and danger_up != 0 and danger_down != 0:
             perfect_y = 1
         else:
             perfect_y = 0
-
         return perfect_x, perfect_y
 
     def check_collision(self, snake_property):

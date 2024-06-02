@@ -11,13 +11,16 @@ class Trainer:
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.loss_fn = nn.HuberLoss()
 
-    @staticmethod
-    def convert_to_tensor(state, action, reward, next_state, done):
+    def convert_to_tensor(self, state, action, reward, next_state, done):
+        # cuda
+        device = next(self.model.parameters()).device
+
         # to tensor
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
+        done = torch.tensor(done, dtype=torch.bool)
 
         # to batch size
         if len(state.shape) == 1:
@@ -25,12 +28,11 @@ class Trainer:
             next_state = torch.unsqueeze(next_state, 0)
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
-            done = (done,)
+            done = torch.unsqueeze(done, 0)
 
-        return state, action, reward, next_state, done
+        return state.to(device), action.to(device), reward.to(device), next_state.to(device), done.to(device)
 
     def train_model(self, state, action, reward, next_state, done):
-
         state, action, reward, next_state, done = self.convert_to_tensor(state, action, reward, next_state, done)
 
         pred = self.model(state)

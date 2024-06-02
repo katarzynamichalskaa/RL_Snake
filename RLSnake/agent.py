@@ -15,7 +15,7 @@ class Agent:
         self.BATCH_SIZE = 1000
         self.lr = 0.001
         self.gamma = 0.9
-        self.model = DQN(n_observations=22, n_actions=4).to(device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+        self.model = DQN(n_observations=22, n_actions=4).to('cuda' if torch.cuda.is_available() else 'cpu')
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
 
     def remember(self, state, action, reward, next_state, game_over):
@@ -39,7 +39,7 @@ class Agent:
         s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(offset=7)
 
         # wall_borders
-        wall_left, wall_right, wall_up, wall_down = game.snake.wall_danger(7)
+        wall_left, wall_right, wall_up, wall_down = game.snake.wall_danger(offset=7)
 
         # food loc
         food_left = int(game.snake.x < game.snake.food_x)
