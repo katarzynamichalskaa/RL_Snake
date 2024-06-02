@@ -15,7 +15,7 @@ class Agent:
         self.BATCH_SIZE = 1000
         self.lr = 0.001
         self.gamma = 0.9
-        self.model = DQN(n_observations=63, n_actions=4)
+        self.model = DQN(n_observations=22, n_actions=4).to(device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
         self.trainer = Trainer(self.model, lr=self.lr, gamma=self.gamma)
 
     def remember(self, state, action, reward, next_state, game_over):
@@ -39,15 +39,15 @@ class Agent:
         s_danger_left, s_danger_up, s_danger_right, s_danger_down = game.snake.segment_danger(offset=7)
 
         # wall_borders
-        l, r, u, d, px, py = game.snake.wall_danger(7)
+        wall_left, wall_right, wall_up, wall_down = game.snake.wall_danger(7)
 
         # food loc
         food_left = int(game.snake.x < game.snake.food_x)
         food_right = int(game.snake.x > game.snake.food_x)
         food_up = int(game.snake.y < game.snake.food_y)
         food_down = int(game.snake.y > game.snake.food_y)
-        perfect_x = int(game.snake.x == game.snake.food_x)
-        perfect_y = int(game.snake.y == game.snake.food_y)
+
+        perfect_x, perfect_y = game.snake.perfect_line(wall_left, wall_up, wall_right, wall_down)
 
         # snake direction
         direction = game.snake.direction
@@ -70,9 +70,9 @@ class Agent:
         state = [food_right, food_left, food_up, food_down, perfect_x, perfect_y,
                  dir_left, dir_right, dir_up, dir_down,
                  danger_left, danger_up, danger_right, danger_down,
-                 # s_danger_left, s_danger_up, s_danger_right, s_danger_down,
-                 # l, r, u, d, px, py,
-                 *game.snake.map_around()]
+                 s_danger_left, s_danger_up, s_danger_right, s_danger_down,
+                 wall_left, wall_right, wall_up, wall_down]
+                 # *game.snake.map_around()]
         return state
 
     @staticmethod

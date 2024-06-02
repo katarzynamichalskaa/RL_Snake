@@ -44,7 +44,7 @@ class Game:
 
         # check game over conditions
         if (self.snake.check_boundaries() or self.snake.check_collision(self.snake.snake_segments[1:])
-                or self.snake.check_collision(self.snake.walls_position)):
+                or self.snake.wall_detection(self.snake.x, self.snake.y)):
             game_over = True
             reward = -12
 

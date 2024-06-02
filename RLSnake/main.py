@@ -11,7 +11,7 @@ agent = Agent()
 
 record = 0
 alpha = 0.5
-epsilon = 1000
+epsilon = 1500
 plot_scores = []
 avg_scores = []
 
@@ -34,7 +34,11 @@ if __name__ == "__main__":
 
             # exploration vs exploitation
             if not MODEL_LOADING_BOOL:
-                epsilon = epsilon - 1
+
+                if epsilon > 10:
+                    epsilon = epsilon - 1
+                else:
+                    epsilon = 10
             else:
                 epsilon = -1
 
@@ -72,9 +76,12 @@ if __name__ == "__main__":
                 avg_scores.append(avg_score)
 
                 # plot every 100 games
-                if agent.number_of_games % 100 == 0:
+                if agent.number_of_games % 25 == 0:
                     plotter.plot(plot_scores, avg_scores)
-                    print('Game', agent.number_of_games, 'Score', score)
+                print('Game', agent.number_of_games, 'Score', score)
+
+                if agent.number_of_games == 400:
+                    game.snake.number_of_walls = 20
 
                 if agent.number_of_games % 1000 == 0:
                     record = score

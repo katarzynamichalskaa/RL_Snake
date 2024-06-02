@@ -1,5 +1,6 @@
 from enum import Enum
 import numpy as np
+import pygame
 from utils import GENERATE_OBSTACLES
 import random
 
@@ -22,24 +23,23 @@ class Snake:
         self.food_x = None
 
         # snake properties
-        self.speed = 70
+        self.speed = 60
         self.unit_per_movement = 5
         self.y = None
         self.x = None
         self.y2 = None
         self.x2 = None
-        self.snake_segments = [(self.x, self.y)]
+        self.snake_segments = None
         self.direction = None
+        self.first_game = True
 
         # walls properties
         if GENERATE_OBSTACLES:
-            self.number_of_walls = 20
+            self.number_of_walls = 90
         else:
             self.number_of_walls = 0
-
         self.wall_width = self.unit_per_movement
         self.wall_length = self.unit_per_movement
-        self.walls_position = []
         self.create_walls()
         self.reset_snake()
 
@@ -48,9 +48,9 @@ class Snake:
         self.y = self.height / 2
         self.x2 = 0
         self.y2 = 0
+        self.first_game = False
         self.direction = Directions.NONE
         self.snake_segments = [(self.x, self.y)]
-        self.walls_position = []
         self.create_walls()
         self.create_food()
 
@@ -59,17 +59,29 @@ class Snake:
 
     def create_food(self):
         self.food_x, self.food_y = self.random_coords([self.width, self.height], 10)
-        while (self.food_x, self.food_y) in self.snake_segments or (self.food_x, self.food_y) in self.walls_position:
+        while (self.food_x, self.food_y) in self.snake_segments or self.wall_detection(self.food_x, self.food_y):
             self.create_food()
 
     def create_walls(self):
+        self.walls_position = []
         for i in range(0, self.number_of_walls):
-            wall_x, wall_y = self.random_coords([self.width, self.height], 10)
-            if (wall_x, wall_y) in self.snake_segments:
-                self.create_walls()
-            else:
-                self.walls_position.append((wall_x, wall_y))
+            x, y = self.random_coords([self.width, self.height], self.unit_per_movement)
+            position = (x, y, self.wall_width, self.wall_length)
+            self.walls_position.append(position)
+        if self.first_game:
+            self.wall_detection(0, 0)
+        else:
+            while self.wall_detection(self.x, self.y):
+                self.walls_position = self.create_walls()
         return self.walls_position
+
+    def wall_detection(self, x, y):
+        walls_area = self.walls_position
+        for wall in walls_area:
+            wall_rect = pygame.Rect(wall[0], wall[1], wall[2], wall[3])
+            point_rect = pygame.Rect(x, y, 2.5, 2.5)
+            if wall_rect.colliderect(point_rect):
+                return True
 
     def check_boundaries(self):
         return self.x >= self.width or self.x < 0 or self.y >= self.height or self.y < 0
@@ -104,15 +116,25 @@ class Snake:
         return danger_zones
 
     def wall_danger(self, offset):
-        danger = [
-                int(any(self.x - offset < wall[0] < self.x for wall in self.walls_position)),
-                int(any(self.x + offset > wall[0] > self.x for wall in self.walls_position)),
-                int(any(self.y - offset < wall[1] < self.y for wall in self.walls_position)),
-                int(any(self.y + offset > wall[1] < self.y for wall in self.walls_position)),
-                int(any(self.x == wall[0] for wall in self.walls_position)),
-                int(any(self.y == wall[1] for wall in self.walls_position))
-            ]
-        return danger
+        danger_zones = [0, 0, 0, 0]
+        # LEFT
+        if any(self.x - 7 < wall[0] < self.x and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
+            # print("LEFT DANGER")
+            danger_zones[0] = 1
+        # UP
+        if any(self.y - 7 < wall[1] < self.y and wall[0] <= self.x <= wall[0] + wall[2] for wall in self.walls_position):
+            # print("UP DANGER")
+            danger_zones[1] = 1
+        # RIGHT
+        if any(self.x + 7 > wall[0] > self.x and wall[1] <= self.y <= wall[1] + wall[3] for wall in self.walls_position):
+            # print("RIGHT DANGER")
+            danger_zones[2] = 1
+        # DOWN
+        if any(self.y + 7 > wall[1] > self.y and wall[0] <= self.x <= wall[0] + wall[2] for wall in self.walls_position):
+            # print("DOWN DANGER")
+            danger_zones[3] = 1
+
+        return danger_zones
 
     def map_around(self):
         positions_to_check = [(self.x + i, self.y + j) for i in range(-3, 4) for j in range(-3, 4)]
@@ -123,6 +145,19 @@ class Snake:
             else:
                 vector.append(0)
         return vector
+
+    def perfect_line(self, danger_left, danger_up, danger_right, danger_down):
+        if self.x == self.food_x and danger_left != 0 and danger_right != 0:
+            perfect_x = 1
+        else:
+            perfect_x = 0
+
+        if self.y == self.food_y and danger_up != 0 and danger_down != 0:
+            perfect_y = 1
+        else:
+            perfect_y = 0
+
+        return perfect_x, perfect_y
 
     def check_collision(self, snake_property):
         return any((self.x, self.y) == item for item in snake_property)
