@@ -9,5 +9,6 @@ The project uses the **Deep Q-Learning (DQN):** A popular RL algorithm that uses
 
 ## Final effect
 ![image](https://github.com/user-attachments/assets/f8ea7e04-0129-4578-90ba-03c7b87e414e)
-https://github.com/katarzynamichalskaa/RL_Snake/assets/92379328/07572c28-609f-4cde-9209-dcb26498ba4c
+
+https://github.com/katarzynamichalskaa/RL_Snake/assets/92379328/07572c28-609f-4cde-9209-dcb26498ba4c 
 
