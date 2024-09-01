@@ -7,6 +7,7 @@ The game environment is custom-built using **PyGame**, a popular library for cre
 ## Algorithm
 The project uses the following RL algorithm:
 - **Deep Q-Learning (DQN):** A popular RL algorithm that uses a neural network to approximate the Q-value function.
+![image](https://github.com/user-attachments/assets/f8ea7e04-0129-4578-90ba-03c7b87e414e)
 
 ## Final effect
 https://github.com/katarzynamichalskaa/RL_Snake/assets/92379328/07572c28-609f-4cde-9209-dcb26498ba4c
