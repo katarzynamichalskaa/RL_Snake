@@ -3,7 +3,7 @@ from collections import deque
 import torch
 from model import DQN
 from trainer import Trainer
-from snake import Directions
+from RLSnake.game_logic.snake import Directions
 from utils import PATH
 
 

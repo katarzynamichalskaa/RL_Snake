@@ -1,9 +1,9 @@
-from agent import Agent
-from game import Game
+from RLSnake.rl.agent import Agent
+from RLSnake.game_logic.game import Game
 import numpy as np
 import torch
-from plotter import Plotter
-from utils import MODEL_LOADING_BOOL
+from RLSnake.helpers.plotter import Plotter
+from RLSnake.helpers.utils import MODEL_LOADING_BOOL
 
 game = Game(500, 500)
 plotter = Plotter()
